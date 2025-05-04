@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Form Builder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background: #f4f6f8;
+        }
+
+        header {
+            background-color: #3498db;
+            color: white;
+            padding: 1.5rem 2rem;
+            font-size: 1.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            text-align: center;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background: #ecf0f1;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            border-radius: 12px;
+        }
+
+        label {
+            font-weight: 600;
+            margin-top: 1.25rem;
+            display: block;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        select, input, textarea {
+            width: calc(100% - 1.5rem);
+            padding: 0.85rem;
+            margin-top: 0.6rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        .btn {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 0.9rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            background-color: #27ae60;
+            box-shadow: 0 3px 7px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .form-builder, .form-preview {
+            margin-top: 2.5rem;
+            padding: 1.5rem;
+            background-color: #f9f9f9;
+            border: 1px solid #dcdde1;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .form-builder strong, .form-preview strong {
+            display: block;
+            margin-bottom: 1rem;
+            color: #555;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .question-block {
+            display: flex;
+            margin-bottom: 1.25rem;
+            align-items: flex-start;
+            padding: 0.75rem;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            flex-direction: column;
+        }
+
+        .question-block:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .question-block input {
+            flex: 1;
+            margin-right: 15px;
+            margin-bottom: 0.75rem;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            border: none;
+            color: white;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .readonly-question {
+            padding: 0.8rem;
+            background: #fff;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            color: #444;
+            font-size: 1rem;
+            word-wrap: break-word;
+        }
+
+        #formPreview {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-top: 1rem;
+        }
+
+        #formPreview .readonly-question {
+            background-color: #f0f0f0;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .answer-type-select {
+            width: calc(100% - 1.5rem);
+            padding: 0.7rem;
+            margin-top: 0.6rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .answer-type-select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        .options-input-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+
+        .options-input-group input {
+            width: calc(100% - 3rem);
+            padding: 0.7rem;
+            margin-top: 0.3rem;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .options-input-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        .add-option-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+            margin-top: 0.5rem;
+            align-self: flex-start;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .add-option-btn:hover {
+            background-color: #2980b9;
+            box-shadow: 0 3px 7px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        #instructions {
+            width: calc(100% - 1.5rem);
+            padding: 0.85rem;
+            margin-top: 0.6rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            resize: none;
+            height: 100px;
+        }
+
+        #instructions:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        #sendInstructionsButton {
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            padding: 0.9rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-left: 1rem;
+        }
+
+        #sendInstructionsButton:hover {
+            background-color: #d35400;
+            box-shadow: 0 3px 7px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+    </style>
+    <script>
+        function sendDataToWebhook(useCase, instructions) {
+            const webhookUrl = "https://waqarak125.app.n8n.cloud/webhook-test/228c75da-f0e5-472f-9be6-b6f66a32f40b"; // Replace with your actual webhook URL
+
+            if (!webhookUrl || webhookUrl === "YOUR_WEBHOOK_URL") {
+                console.error("Webhook URL is not configured. Please update the webhookUrl variable in the script.");
+                return; // Stop execution if the URL is not configured
+            }
+
+            const data = {
+                useCase: useCase,
+                instructions: instructions
+            };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json(); // Or response.text() if you expect plain text
+            })
+            .then(responseData => {
+                console.log('Data sent successfully:', responseData);
+                // Handle the response from your webhook here if needed
+            })
+            .catch(error => {
+                console.error('Error sending data to webhook:', error);
+                // Handle errors (e.g., show a message to the user)
+            });
+        }
+    </script>
+</head>
+<body>
+
+    <header>Smart Form Builder</header>
+
+    <div class="container">
+        <label>Form Name</label>
+        <input type="text" placeholder="Enter your form title" />
+
+        <label>Select Use Case</label>
+        <select id="useCaseSelect" onchange="generateQuestions(this.value)">
+            <option value="">-- Choose use case --</option>
+            <option value="job">Candidate Screening</option>
+            <option value="lead">Lead Qualification</option>
+            <option value="survey">Survey Feedback</option>
+            <option value="support">Customer Support</option>
+        </select>
+
+        <label>Instructions</label>
+        <textarea id="instructions" placeholder="Please define what you want to do, and let the AI write the questions for you."></textarea>
+        <button id="sendInstructionsButton" onclick="handleSendInstructions()">Send Instructions</button>
+
+        <div class="form-builder" id="questionList">
+            <strong id="questionsTitle">Your Questions:</strong>
+            <div id="questionsContainer"></div>
+            <button class="btn" onclick="addManualQuestion()">+ Add Manual Question</button>
+        </div>
+
+        <div class="form-preview">
+            <strong>Form Preview:</strong>
+            <div id="formPreview"></div>
+        </div>
+
+        <button class="btn" onclick="handleSaveAndPublish()">Save & Publish Form</button>
+    </div>
+
+    <script>
+        const questionSets = {
+            job: [
+                "What is your highest qualification?",
+                "How many years of relevant experience do you have?",
+                "Why do you want to join our company?",
+                "Rate your proficiency in relevant software/tools."
+            ],
+            lead: [
+                "What problem are you trying to solve?",
+                "What is your company size?",
+                "How soon do you plan to purchase a solution?"
+            ],
+            survey: [
+                "How satisfied are you with our service?",
+                "What could we improve?",
+                "Would you recommend us to others?"
+            ],
+            support: [
+                "Describe your issue in detail.",
+                "Have you tried any solutions already?",
+                "How urgent is this request?"
+            ]
+        };
+
+        const questionsContainer = document.getElementById("questionsContainer");
+        const formPreview = document.getElementById("formPreview");
+        const questionsTitleElement = document.getElementById("questionsTitle");
+        const questionInputElements = [];
+        const instructionBox = document.getElementById("instructions");
+        const useCaseSelect = document.getElementById("useCaseSelect");
+
+
+        function generateQuestions(useCase) {
+            questionsContainer.innerHTML = "";
+            formPreview.innerHTML = "";
+            questionInputElements.length = 0;
+
+            if (useCase) {
+                const useCaseText = document.getElementById("useCaseSelect").options[document.getElementById("useCaseSelect").selectedIndex].text;
+                questionsTitleElement.innerText = `${useCaseText} Questions:`;
+            } else {
+                questionsTitleElement.innerText = "Your Questions:";
+            }
+
+            if (questionSets[useCase]) {
+                questionSets[useCase].forEach(q => addQuestionToUI(q));
+                updateFormPreview();
+            }
+        }
+
+        function addQuestionToUI(text = "") {
+            const wrapper = document.createElement("div");
+            wrapper.className = "question-block";
+
+            const input = document.createElement("input");
+            input.type = "text";
+            input.placeholder = "Enter question here";
+            input.value = text;
+            input.className = "question-input";
+            questionInputElements.push(input);
+            wrapper.appendChild(input);
+
+            const answerTypeSelect = document.createElement("select");
+            answerTypeSelect.className = "answer-type-select";
+            answerTypeSelect.innerHTML = `
+                <option value="text">Text</option>
+                <option value="number">Number</option>
+                <option value="rating">Rating (1-10)</option>
+                <option value="multiple_choice">Multiple Choice</option>
+                <option value="checkboxes">Checkboxes</option>
+                <option value="dropdown">Dropdown</option>
+                <option value="yes_no">Yes/No</option>
+            `;
+            answerTypeSelect.onchange = () => updateFormPreview();
+            wrapper.appendChild(answerTypeSelect);
+
+            const optionsDiv = document.createElement("div");
+            optionsDiv.className = "options-input-group";
+            optionsDiv.style.display = "none";
+
+            const addOptionButton = document.createElement("button");
+            addOptionButton.className = "add-option-btn";
+            addOptionButton.textContent = "+ Add Option";
+            addOptionButton.onclick = () => {
+                const optionInput = document.createElement("input");
+                optionInput.type = "text";
+                optionInput.placeholder = "Enter option";
+                optionsDiv.appendChild(optionInput);
+                updateFormPreview();
+            };
+            optionsDiv.appendChild(addOptionButton);
+            wrapper.appendChild(optionsDiv);
+
+            answerTypeSelect.addEventListener("change", () => {
+                if (answerTypeSelect.value === "multiple_choice" || answerTypeSelect.value === "checkboxes" || answerTypeSelect.value === "dropdown") {
+                    optionsDiv.style.display = "flex";
+                    if (optionsDiv.children.length <= 1) {
+                        const optionInput1 = document.createElement("input");
+                        optionInput1.type = "text";
+                        optionInput1.placeholder = "Enter option";
+                        optionsDiv.appendChild(optionInput1);
+                        const optionInput2 = document.createElement("input");
+                        optionInput2.type = "text";
+                        optionInput1.placeholder = "Enter option";
+                        optionsDiv.appendChild(optionInput2);
+                        updateFormPreview();
+                    }
+                } else {
+                    optionsDiv.style.display = "none";
+                    optionsDiv.innerHTML = `<button class="add-option-btn" onclick="addOption(this)">+ Add Option</button>`;
+                }
+                updateFormPreview();
+            });
+
+            const btn = document.createElement("button");
+            btn.className = "delete-btn";
+            btn.innerText = "Delete";
+            btn.onclick = () => {
+                questionInputElements.splice(questionInputElements.indexOf(input), 1);
+                wrapper.remove();
+                updateFormPreview();
+            };
+            wrapper.appendChild(btn);
+
+            questionsContainer.appendChild(wrapper);
+        }
+
+        function addManualQuestion() {
+            addQuestionToUI("");
+        }
+
+        function updateFormPreview() {
+            formPreview.innerHTML = "";
+            const instructionText = instructionBox.value;
+            if (instructionText) {
+                const instructionDiv = document.createElement("div");
+                instructionDiv.className = "readonly-question";
+                instructionDiv.innerHTML = `<p style="margin-bottom: 0.5rem; font-weight: bold;">Instructions:</p>
+                                            <p>${instructionText}</p>`;
+                formPreview.appendChild(instructionDiv);
+            }
+
+            questionInputElements.forEach((input, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.className = "readonly-question";
+                const answerTypeSelectElement = questionsContainer.querySelectorAll('.answer-type-select')[index];
+                const optionsDiv = questionsContainer.querySelectorAll('.options-input-group')[index];
+                let questionText = input.value || "(Empty question)";
+                questionDiv.innerHTML = `<p style="margin-bottom: 0.5rem;">${questionText}</p>`;
+                const answerType = answerTypeSelectElement.value;
+
+                switch (answerType) {
+                    case "text":
+                        questionDiv.innerHTML += `<input type="text" placeholder="Your answer here" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">`;
+                        break;
+                    case "number":
+                        questionDiv.innerHTML += `<input type="number" placeholder="Enter a number" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">`;
+                        break;
+                    case "rating":
+                        questionDiv.innerHTML += `<div style="display: flex; align-items: center; gap: 1rem;">
+                            <span>Rating:</span>
+                            ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => `<label style="margin: 0;"><input type="radio" name="rating_${index}" value="${i}"> ${i}</label>`).join('')}
+                        </div>`;
+                        break;
+                    case "multiple_choice":
+                        const optionInputsMC = optionsDiv.querySelectorAll('input');
+                        if (optionInputsMC.length > 0) {
+                            questionDiv.innerHTML += `<div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                ${Array.from(optionInputsMC).map((optionInput, optionIndex) => `<label style="margin: 0;"><input type="radio" name="mc_${index}" value="${optionIndex}"> ${optionInput.value}</label>`).join('')}
+                            </div>`;
+                        } else {
+                            questionDiv.innerHTML += `<p>No options provided</p>`;
+                        }
+                        break;
+                    case "checkboxes":
+                        const optionInputsCB = optionsDiv.querySelectorAll('input');
+                        if (optionInputsCB.length > 0) {
+                            questionDiv.innerHTML += `<div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                ${Array.from(optionInputsCB).map((optionInput, optionIndex) => `<label style="margin: 0;"><input type="checkbox" name="cb_${index}_${optionIndex}"> ${optionInput.value}</label>`).join('')}
+                            </div>`;
+                        } else {
+                            questionDiv.innerHTML += `<p>No options provided</p>`;
+                        }
+                        break;
+                    case "dropdown":
+                        const optionInputsDD = optionsDiv.querySelectorAll('input');
+                        if (optionInputsDD.length > 0) {
+                            questionDiv.innerHTML += `<select style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">
+                                <option value="" disabled selected>Select an option</option>
+                                ${Array.from(optionInputsDD).map(optionInput => `<option value="${optionInput.value}">${optionInput.value}</option>`).join('')}
+                            </select>`;
+                        } else {
+                            questionDiv.innerHTML += `<p>No options provided</p>`;
+                        }
+                        break;
+                    case "yes_no":
+                        questionDiv.innerHTML += `<div style="display: flex; gap: 1rem;">
+                            <label style="margin: 0;"><input type="radio" name="yes_no_${index}" value="yes"> Yes</label>
+                            <label style="margin: 0;"><input type="radio" name="yes_no_${index}" value="no"> No</label>
+                        </div>`;
+                        break;
+                    default:
+                        questionDiv.innerHTML += `<input type="text" placeholder="Your answer here" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">`;
+                }
+                formPreview.appendChild(questionDiv);
+            });
+        }
+
+        function handleSaveAndPublish() {
+            const useCase = useCaseSelect.value;
+            const instructions = instructionBox.value;
+
+
+            if (!useCase) {
+                alert("Please select a use case before saving and publishing.");
+                return;
+            }
+
+            // Call the function to send data to the webhook
+            sendDataToWebhook(useCase, instructions);
+        }
+
+        function handleSendInstructions() {
+            const instructions = instructionBox.value;
+            const useCase = useCaseSelect.options[useCaseSelect.selectedIndex].text;
+
+             if (!instructions) {
+                alert("Please enter instructions to send.");
+                return;
+            }
+            sendDataToWebhook(useCase, instructions);
+        }
+    </script>
+</body>
+</html>
